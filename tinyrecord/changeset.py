@@ -18,7 +18,7 @@ class Changeset:
         it again and again it will be executed
         many times.
         """
-        data = self.db._read()
+        data = self.db._read_table()
         for operation in self.record:
             operation.perform(data)
         self.db._write(data)
