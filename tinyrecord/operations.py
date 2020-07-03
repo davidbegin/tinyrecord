@@ -1,3 +1,6 @@
+import abc
+
+
 def null_query(x):
     """
     Returns false regardless of the document
@@ -6,15 +9,16 @@ def null_query(x):
     return False
 
 
-class Operation:
-    """
-    An operation represents a single, atomic
-    sequence of things to do to in-memory data.
-    Every operation must implement the abstract
-    ``perform`` method.
-    """
+class Operation(abc.ABC):
+    @abc.abstractmethod
     def perform(self):
-        raise NotImplementedError
+        """
+        An operation represents a single, atomic
+        sequence of things to do to in-memory data.
+        Every operation must implement the abstract
+        ``perform`` method.
+        """
+        return
 
 
 class InsertMultiple(Operation):
@@ -28,11 +32,11 @@ class InsertMultiple(Operation):
     def __init__(self, iterable):
         self.iterable = iterable
 
-    def perform(self, data):
-        doc_id = max(data) if data else 0
+    def perform(self, table):
+        doc_id = max(table) if table else 0
         for element in self.iterable:
             doc_id += 1
-            data[doc_id] = element
+            table[doc_id] = element
 
 
 class UpdateCallable(Operation):
@@ -48,9 +52,9 @@ class UpdateCallable(Operation):
         self.query = query
         self.doc_ids = set(doc_ids)
 
-    def perform(self, data):
-        for key in data:
-            value = data[key]
+    def perform(self, table):
+        for key in table:
+            value = table[key]
             if key in self.doc_ids or self.query(value):
                 self.function(value)
 
@@ -66,7 +70,7 @@ class Remove(Operation):
         self.query = query
         self.doc_ids = set(doc_ids)
 
-    def perform(self, data):
-        for key in list(data):
-            if key in self.doc_ids or self.query(data[key]):
-                del data[key]
+    def perform(self, table):
+        for key in list(table):
+            if key in self.doc_ids or self.query(table[key]):
+                del table[key]

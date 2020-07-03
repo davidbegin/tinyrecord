@@ -18,15 +18,12 @@ class Changeset:
         it again and again it will be executed
         many times.
         """
-        data = self.db._read_table()
-        for operation in self.record:
-            operation.perform(data)
-        self.db._write(data)
+        def updater(table: dict):
+            for operation in self.record:
+                operation.perform(table)
+
+        self.db._update_table(updater)
         self.db.clear_cache()
-        self.db._last_id = max(
-            max(data) if data else -1,
-            self.db._last_id,
-        )
 
     def append(self, change):
         """

@@ -13,7 +13,6 @@ def db():
 def test_insert_multiple(db):
     with transaction(db) as tr:
         tr.insert_multiple({} for x in range(5))
-
     assert len(db) == 5
 
 
@@ -90,7 +89,6 @@ def test_insert(db):
         tr.insert({})
 
     assert len(db) == 1
-    assert db._last_id == 1
 
 
 def test_concurrent(db):

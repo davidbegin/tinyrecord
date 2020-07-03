@@ -3,7 +3,7 @@ from tinydb import TinyDB, where
 from tinyrecord import transaction
 
 db = TinyDB('db.json')
-db.purge()
+db.truncate()
 table = db.table('settings')
 table.insert({'name': 'test', 'value': 0})
 
